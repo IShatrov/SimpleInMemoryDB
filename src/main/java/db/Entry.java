@@ -22,4 +22,16 @@ public class Entry {
     public void setValue(double value) {
         this.value = value;
     }
+
+    public long getAccount() {
+        return account;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getValue() {
+        return value;
+    }
 }

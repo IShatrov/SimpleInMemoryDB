@@ -1,6 +1,6 @@
 package db.kdtree;
 
-enum Axes {
+enum Axis {
     ACCOUNT,
     NAME,
     VALUE;

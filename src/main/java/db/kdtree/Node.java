@@ -17,4 +17,16 @@ class Node {
     void setRight(Node right) {
         this.right = right;
     }
+
+    Entry getData() {
+        return data;
+    }
+
+    Node getLeft() {
+        return left;
+    }
+
+    Node getRight() {
+        return right;
+    }
 }
