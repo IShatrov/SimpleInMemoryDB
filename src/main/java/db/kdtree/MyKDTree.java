@@ -5,8 +5,12 @@ import db.Entry;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MyKDTree {
+    private static final double EPS = 1e-6;
+
     private Node root;
 
     public void add(Entry data) {
@@ -40,6 +44,73 @@ public class MyKDTree {
         }
 
         return currentRoot;
+    }
+
+    public List<Entry> findByName(String name) {
+        List<Entry> ans = new ArrayList<>();
+
+        Entry target = new Entry(0, name, 0); // a dummy entry to pass to recursive searcher
+
+        this.findByNameRecursive(this.root, target, BigInteger.valueOf(0), ans, Axis.NAME);
+
+        return ans;
+    }
+    public List<Entry> findByAccount(long account) {
+        List<Entry> ans = new ArrayList<>();
+
+        Entry target = new Entry(account, "", 0); // a dummy entry to pass to recursive searcher
+
+        this.findByNameRecursive(this.root, target, BigInteger.valueOf(0), ans, Axis.ACCOUNT);
+
+        return ans;
+    }
+
+    public List<Entry> findByValue(double value) {
+        List<Entry> ans = new ArrayList<>();
+
+        Entry target = new Entry(0, "", value); // a dummy entry to pass to recursive searcher
+
+        this.findByNameRecursive(this.root, target, BigInteger.valueOf(0), ans, Axis.VALUE);
+
+        return ans;
+    }
+
+    private void findByNameRecursive(Node currentRoot, Entry target, BigInteger currentDepth, List<Entry> ans, Axis searchAxis) {
+        if (currentRoot == null) {
+            return;
+        }
+
+        int axisIndex = currentDepth.mod(BigInteger.valueOf(Axis.values().length)).intValue();
+        Axis axis = Axis.values()[axisIndex];
+
+        boolean isNodeLower = switch (searchAxis) {
+            case NAME -> target.getName().compareTo(currentRoot.getData().getName()) < 0;
+            case VALUE -> target.getValue() < currentRoot.getData().getValue();
+            case ACCOUNT -> target.getAccount() < currentRoot.getData().getAccount();
+        };
+
+        boolean isNodeEqual = switch (searchAxis) {
+            case NAME -> target.getName().equals(currentRoot.getData().getName());
+            case VALUE -> Math.abs(target.getValue() - currentRoot.getData().getValue()) < EPS;
+            case ACCOUNT -> target.getAccount() == currentRoot.getData().getAccount();
+        };
+
+        if (axis == searchAxis) {
+            if (isNodeLower) {
+                this.findByNameRecursive(currentRoot.getLeft(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
+            } else if (isNodeEqual) {
+                ans.add(currentRoot.getData());
+            }
+
+            this.findByNameRecursive(currentRoot.getRight(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
+        } else {
+            if (isNodeEqual) {
+                ans.add(currentRoot.getData());
+            }
+
+            this.findByNameRecursive(currentRoot.getLeft(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
+            this.findByNameRecursive(currentRoot.getRight(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
+        }
     }
 
     public void graphvizLog(String filename) throws IOException {
