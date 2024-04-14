@@ -2,6 +2,8 @@ package db.kdtree;
 
 import db.Entry;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.math.BigInteger;
 
 public class MyKDTree {
@@ -38,5 +40,21 @@ public class MyKDTree {
         }
 
         return currentRoot;
+    }
+
+    public void graphvizLog(String filename) throws IOException {
+        FileWriter writer = new FileWriter(filename);
+
+        writer.write("""
+                digraph dump
+                {
+                \tnode[shape = "record", style = "rounded, filled"];
+                """);
+
+        this.root.graphvizWriteChildren(writer);
+
+        writer.write("}");
+
+        writer.close();
     }
 }

@@ -34,4 +34,8 @@ public class Entry {
     public double getValue() {
         return value;
     }
+
+    public String toString() {
+        return "account: " + account + " ; name: " + name + " ; value: " + value;
+    }
 }

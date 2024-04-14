@@ -2,7 +2,12 @@ package db.kdtree;
 
 import db.Entry;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 class Node {
+    private static final String color = "cornsilk2";
+
     private Entry data;
     private Node left, right;
 
@@ -28,5 +33,23 @@ class Node {
 
     Node getRight() {
         return right;
+    }
+
+    void graphvizWriteChildren(FileWriter writer) throws IOException {
+        if (left != null) {
+            writer.write("\t\"" + this + "\"->\"" + left + "\";\n");
+            left.graphvizWriteChildren(writer);
+        }
+
+        if (right != null) {
+            writer.write("\t\"" + this + "\"->\"" + right + "\";\n");
+            right.graphvizWriteChildren(writer);
+        }
+
+        this.graphvizLog(writer);
+    }
+
+    private void graphvizLog(FileWriter writer) throws IOException {
+        writer.write("\t\"" + this + "\"[label = \"{" + this.getData().toString() + "}\", fillcolor = " + color + "];\n\n");
     }
 }

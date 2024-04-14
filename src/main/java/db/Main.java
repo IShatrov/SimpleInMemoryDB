@@ -6,7 +6,22 @@ public class Main {
     public static void main(String[] args) {
         MyKDTree tree = new MyKDTree();
 
-        tree.add(new Entry(123, "aaa", 1.23));
-        tree.add(new Entry(124, "aba", 1.34));
+        tree.add(new Entry(500, "vladimir", 123.456));
+        tree.add(new Entry(700, "boris", 1.34));
+        tree.add(new Entry(300, "boris", 31.45));
+        tree.add(new Entry(400, "alexey", 1.34));
+        tree.add(new Entry(123, "x", 1.34));
+        tree.add(new Entry(501, "anastasia", -8));
+        tree.add(new Entry(502, "denis", 10));
+        tree.add(new Entry(350, "andrey", 0));
+        tree.add(new Entry(351, "anya", 100));
+        tree.add(new Entry(400, "aaaaaa", 0.3));
+        tree.add(new Entry(349, "bbb", 0.3));
+
+        try {
+            tree.graphvizLog("graphviz.txt");
+        } catch (Exception ex) {
+            System.out.println("error");
+        }
     }
 }
