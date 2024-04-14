@@ -1,1 +1,2 @@
-A simple in memory database
+# A simple in memory database
+![graphviz](graphviz.png)
