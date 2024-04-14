@@ -19,7 +19,7 @@ public class Main {
         tree.add(new Entry(349, "vladimir", 0.3));
         tree.add(new Entry(501, "znxs,x", 0.3));
 
-        tree.delete(new Entry(500, "vladimir", 123.456));
+        tree.change(new Entry(500, "vladimir", 123.456), new Entry(500, "vladimir", 300));
 
 
         try {

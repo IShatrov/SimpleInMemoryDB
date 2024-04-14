@@ -151,6 +151,11 @@ public class MyKDTree {
         constructSubtreeList(currentRoot.getLeft(), entries);
     }
 
+    public void change(Entry oldEntry, Entry newEntry) throws IllegalArgumentException {
+        this.delete(oldEntry);
+        this.add(newEntry);
+    }
+
     public void graphvizLog(String filename) throws IOException {
         FileWriter writer = new FileWriter(filename);
 
