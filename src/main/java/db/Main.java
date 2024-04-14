@@ -2,8 +2,6 @@ package db;
 
 import db.kdtree.MyKDTree;
 
-import java.util.List;
-
 public class Main {
     public static void main(String[] args) {
         MyKDTree tree = new MyKDTree();
@@ -21,9 +19,8 @@ public class Main {
         tree.add(new Entry(349, "vladimir", 0.3));
         tree.add(new Entry(501, "znxs,x", 0.3));
 
-        List<Entry> list = tree.findByAccount(501);
+        tree.delete(new Entry(500, "vladimir", 123.456));
 
-        list.forEach(System.out::println);
 
         try {
             tree.graphvizLog("graphviz.txt");

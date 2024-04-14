@@ -113,6 +113,44 @@ public class MyKDTree {
         }
     }
 
+    public void delete(Entry target) throws IllegalArgumentException {
+        List<Entry> candidates = this.findByAccount(target.getAccount());
+
+        boolean containsTarget = false;
+        for (Entry entry : candidates) {
+            if (entry.equals(target)) {
+                containsTarget = true;
+            }
+        }
+
+        if (!containsTarget) {
+            throw new IllegalArgumentException("Tree does not contain " + target);
+        }
+
+        List<Entry> entries = new ArrayList<>();
+
+        constructSubtreeList(this.root, entries);
+
+        this.root = null;
+
+        entries.forEach(entry -> {
+            if (!entry.equals(target)) {
+                this.add(entry);
+            }
+        });
+    }
+
+    private void constructSubtreeList(Node currentRoot, List<Entry> entries) {
+        if (currentRoot == null) {
+            return;
+        }
+
+        entries.add(currentRoot.getData());
+
+        constructSubtreeList(currentRoot.getRight(), entries);
+        constructSubtreeList(currentRoot.getLeft(), entries);
+    }
+
     public void graphvizLog(String filename) throws IOException {
         FileWriter writer = new FileWriter(filename);
 
