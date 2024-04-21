@@ -11,6 +11,10 @@ import java.util.List;
 public class MyKDTree {
     private Node root;
 
+    /**
+     * Adds entry to tree. If this.root == null, new node is set as root, otherwise this.addRecursive is called.
+     * @param data data to add.
+     */
     public void add(Entry data) {
         Node node = new Node(data);
 
@@ -21,6 +25,14 @@ public class MyKDTree {
         }
     }
 
+    /**
+     * A recursive method to add nodes to the tree.
+     * @param currentRoot root of current subtree.
+     * @param node node to be added.
+     * @param currentDepth current depth.
+     * @see <a href="https://en.wikipedia.org/wiki/K-d_tree#Operations_on_k-d_trees"> wikipedia </a>
+     * @return node if currentRoot == null, currentRoot otherwise.
+     */
     private Node addRecursive(Node currentRoot, Node node, BigInteger currentDepth) {
         if (currentRoot == null) {
             return node;
@@ -40,36 +52,60 @@ public class MyKDTree {
         return currentRoot;
     }
 
+    /**
+     * Finds all nodes whose name equals name.
+     * @param name name to find.
+     * @return a list containing all entries whose name equals name.
+     */
     public List<Entry> findByName(String name) {
         List<Entry> ans = new ArrayList<>();
 
         Entry target = new Entry(0, name, 0); // a dummy entry to pass to recursive searcher
 
-        this.findByNameRecursive(this.root, target, BigInteger.valueOf(0), ans, Axis.NAME);
+        this.findRecursive(this.root, target, BigInteger.valueOf(0), ans, Axis.NAME);
 
         return ans;
     }
+
+    /**
+     * Finds all nodes whose account equals account.
+     * @param account account to find.
+     * @return a list containing all entries whose account equals account.
+     */
     public List<Entry> findByAccount(long account) {
         List<Entry> ans = new ArrayList<>();
 
         Entry target = new Entry(account, "", 0); // a dummy entry to pass to recursive searcher
 
-        this.findByNameRecursive(this.root, target, BigInteger.valueOf(0), ans, Axis.ACCOUNT);
+        this.findRecursive(this.root, target, BigInteger.valueOf(0), ans, Axis.ACCOUNT);
 
         return ans;
     }
 
+    /**
+     * Finds all nodes whose value equals value. Uses EPS constant as precision.
+     * @param value value to find.
+     * @return a list containing all entries whose value equals value.
+     */
     public List<Entry> findByValue(double value) {
         List<Entry> ans = new ArrayList<>();
 
         Entry target = new Entry(0, "", value); // a dummy entry to pass to recursive searcher
 
-        this.findByNameRecursive(this.root, target, BigInteger.valueOf(0), ans, Axis.VALUE);
+        this.findRecursive(this.root, target, BigInteger.valueOf(0), ans, Axis.VALUE);
 
         return ans;
     }
 
-    private void findByNameRecursive(Node currentRoot, Entry target, BigInteger currentDepth, List<Entry> ans, Axis searchAxis) {
+    /**
+     * A recursive helper method to find entries.
+     * @param currentRoot current root.
+     * @param target entry to find.
+     * @param currentDepth current depths.
+     * @param ans list of found entries.
+     * @param searchAxis search axis.
+     */
+    private void findRecursive(Node currentRoot, Entry target, BigInteger currentDepth, List<Entry> ans, Axis searchAxis) {
         if (currentRoot == null) {
             return;
         }
@@ -87,22 +123,27 @@ public class MyKDTree {
 
         if (axis == searchAxis) {
             if (isNodeLower) {
-                this.findByNameRecursive(currentRoot.getLeft(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
+                this.findRecursive(currentRoot.getLeft(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
             } else if (isNodeEqual) {
                 ans.add(currentRoot.getData());
             }
 
-            this.findByNameRecursive(currentRoot.getRight(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
+            this.findRecursive(currentRoot.getRight(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
         } else {
             if (isNodeEqual) {
                 ans.add(currentRoot.getData());
             }
 
-            this.findByNameRecursive(currentRoot.getLeft(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
-            this.findByNameRecursive(currentRoot.getRight(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
+            this.findRecursive(currentRoot.getLeft(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
+            this.findRecursive(currentRoot.getRight(), target, currentDepth.add(BigInteger.valueOf(1)), ans, searchAxis);
         }
     }
 
+    /**
+     * Deleted an entry from the tree.
+     * @param target entry to delete.
+     * @throws IllegalArgumentException if the tree does not contain such entry.
+     */
     public void delete(Entry target) throws IllegalArgumentException {
         List<Entry> candidates = this.findByAccount(target.getAccount());
 
@@ -130,6 +171,11 @@ public class MyKDTree {
         });
     }
 
+    /**
+     * Returns a list containing all entries in current subtree. Used in delete() method.
+     * @param currentRoot root of current subtree.
+     * @param entries list of entries.
+     */
     private void constructSubtreeList(Node currentRoot, List<Entry> entries) {
         if (currentRoot == null) {
             return;
@@ -141,11 +187,24 @@ public class MyKDTree {
         constructSubtreeList(currentRoot.getLeft(), entries);
     }
 
+    /**
+     * Changes an entry by calling delete() and add() methods.
+     * @param oldEntry entry to change.
+     * @param newEntry new value of the entry.
+     * @throws IllegalArgumentException if oldEntry is not present in the tree.
+     */
     public void change(Entry oldEntry, Entry newEntry) throws IllegalArgumentException {
         this.delete(oldEntry);
         this.add(newEntry);
     }
 
+    /**
+     * Generates a graphviz log of the tree.
+     * @param filename file to write to.
+     * @see <a href="https://graphviz.org/doc/info/colors.html">graphviz documentation</a>
+     * @see <a href="https://dreampuf.github.io/GraphvizOnline"> graphviz parser </a>
+     * @throws IOException when writing fails.
+     */
     public void graphvizLog(String filename) throws IOException {
         FileWriter writer = new FileWriter(filename);
 
