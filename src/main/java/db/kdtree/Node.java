@@ -6,9 +6,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 class Node {
+    private static final double EPS = 1e-6;
     private static final String color = "cornsilk2";
 
-    private Entry data;
+    private final Entry data;
     private Node left, right;
 
     Node(Entry data) {
@@ -51,5 +52,25 @@ class Node {
 
     private void graphvizLog(FileWriter writer) throws IOException {
         writer.write("\t\"" + this + "\"[label = \"{" + this.getData().toString() + "}\", fillcolor = " + color + "];\n\n");
+    }
+
+    boolean isLower(Entry other, Axis axis) {
+        return switch (axis) {
+            case NAME -> this.getData().getName().compareTo(other.getName()) < 0;
+            case VALUE -> this.getData().getValue() < other.getValue();
+            case ACCOUNT -> this.getData().getAccount() < other.getAccount();
+        };
+    }
+
+    boolean isLower(Node other, Axis axis) {
+        return this.isLower(other.getData(), axis);
+    }
+
+    boolean equals(Entry other, Axis axis) {
+        return switch (axis) {
+            case NAME -> this.getData().getName().equals(other.getName());
+            case VALUE -> Math.abs(this.getData().getValue() - other.getValue()) < EPS;
+            case ACCOUNT -> this.getData().getAccount() == other.getAccount();
+        };
     }
 }

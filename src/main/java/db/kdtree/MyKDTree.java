@@ -9,8 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MyKDTree {
-    private static final double EPS = 1e-6;
-
     private Node root;
 
     public void add(Entry data) {
@@ -31,11 +29,7 @@ public class MyKDTree {
         int axisIndex = currentDepth.mod(BigInteger.valueOf(Axis.values().length)).intValue();
         Axis axis = Axis.values()[axisIndex];
 
-        boolean isNodeLower = switch (axis) {
-            case NAME -> node.getData().getName().compareTo(currentRoot.getData().getName()) < 0;
-            case VALUE -> node.getData().getValue() < currentRoot.getData().getValue();
-            case ACCOUNT -> node.getData().getAccount() < currentRoot.getData().getAccount();
-        };
+        boolean isNodeLower = node.isLower(currentRoot, axis);
 
         if (isNodeLower) {
             currentRoot.setLeft(this.addRecursive(currentRoot.getLeft(), node, currentDepth.add(BigInteger.valueOf(1))));
@@ -83,17 +77,13 @@ public class MyKDTree {
         int axisIndex = currentDepth.mod(BigInteger.valueOf(Axis.values().length)).intValue();
         Axis axis = Axis.values()[axisIndex];
 
-        boolean isNodeLower = switch (searchAxis) {
-            case NAME -> target.getName().compareTo(currentRoot.getData().getName()) < 0;
-            case VALUE -> target.getValue() < currentRoot.getData().getValue();
-            case ACCOUNT -> target.getAccount() < currentRoot.getData().getAccount();
-        };
+        boolean isNodeLower = !currentRoot.isLower(target, axis);
 
-        boolean isNodeEqual = switch (searchAxis) {
-            case NAME -> target.getName().equals(currentRoot.getData().getName());
-            case VALUE -> Math.abs(target.getValue() - currentRoot.getData().getValue()) < EPS;
-            case ACCOUNT -> target.getAccount() == currentRoot.getData().getAccount();
-        };
+        boolean isNodeEqual = currentRoot.equals(target, searchAxis);
+
+        if (isNodeEqual) {
+            isNodeLower = false;
+        }
 
         if (axis == searchAxis) {
             if (isNodeLower) {
